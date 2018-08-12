@@ -13,11 +13,14 @@ static PyObject* CM2S(PyObject *self, PyObject *args, PyObject *keywds)
     PyObject *arg_normalizedFreq = NULL;
     static char *kwlist[] = {"matrix", "normalizedFreq", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OO", kwlist, &arg_matrix, &arg_normalizedFreq))
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OO", kwlist, &arg_matrix, &arg_normalizedFreq)){
+        PyErr_SetString(PyExc_RuntimeError, "incorrect argument for CM2S(M, normalizedFreq)");
         return NULL;
+    }
 
     PyObject *matrix = PyArray_FROM_OTF(arg_matrix, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
     if (matrix == NULL){
+        PyErr_SetString(PyExc_RuntimeError, "incorrect first argument for CM2S(M, normalizedFreq)");
         return NULL;
     }
     npy_double *matrix_ptr = (npy_double *)PyArray_DATA((PyArrayObject *)matrix);
@@ -28,6 +31,7 @@ static PyObject* CM2S(PyObject *self, PyObject *args, PyObject *keywds)
     PyObject *normalizedFreq = PyArray_FROM_OTF(arg_normalizedFreq, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
     if (normalizedFreq == NULL){
         Py_DECREF(matrix);
+        PyErr_SetString(PyExc_RuntimeError, "incorrect second argument for CM2S(M, normalizedFreq)");
         return NULL;
     }
     npy_double *normalizedFreq_ptr = (npy_double *)PyArray_DATA((PyArrayObject *)normalizedFreq);
@@ -103,7 +107,7 @@ static struct PyMethodDef MylibMethods[] = {
 static struct PyModuleDef CouplingmatrixModule = {
     PyModuleDef_HEAD_INIT,
     "couplingmatrix",   /* name of module */
-    NULL, /* module documentation, may be NULL */
+    "coupling matrix module", /* module documentation, may be NULL */
     -1,       /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
     MylibMethods
 };
