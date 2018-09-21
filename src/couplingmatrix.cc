@@ -96,7 +96,14 @@ static PyObject* CM2S(PyObject *self, PyObject *args, PyObject *keywds)
     Py_DECREF(matrix);
     Py_DECREF(normalizedFreq);
 
-    return Py_BuildValue("(O, O)", S11, S21);
+    PyObject *result = Py_BuildValue("(O, O)", S11, S21);
+    Py_DECREF(S11);
+    Py_DECREF(S21);
+    if (result == NULL){
+        PyErr_SetString(PyExc_RuntimeError, "failed to build result");
+        return NULL;
+    }
+    return result;
 }
 
 static struct PyMethodDef MylibMethods[] = {
